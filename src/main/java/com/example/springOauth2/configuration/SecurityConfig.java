@@ -1,14 +1,20 @@
 package com.example.springOauth2.configuration;
 
+import java.util.UUID;
+
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
@@ -28,9 +34,11 @@ public class SecurityConfig {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
         httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(
             customizer -> customizer.clientRegistrationEndpoint(
-                clientRegistrationEndpoint -> Customizer.withDefaults()
+                clientRegistrationEndpoint -> clientRegistrationEndpoint.authenticationProviders(CustomClientMetadataConfig.configureCustomClientMetadataConverters())
             )
-        );	// Enable OpenID Connect 1.0
+        );
+
+        httpSecurity.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
     }
 
@@ -40,11 +48,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    RegisteredClientRepository registeredClientRepository() {
-        JdbcRegisteredClientRepository clientRepository = new JdbcRegisteredClientRepository(jdbcTemplate());
+	public RegisteredClientRepository registeredClientRepository() {
+		RegisteredClient registrarClient = RegisteredClient.withId(UUID.randomUUID().toString())
+				.clientId("registrar-client")
+				.clientSecret("{noop}secret")
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)	
+				.scope("client.create")	
+				.scope("client.read")	
+				.build();
 
-        return clientRepository;
-    }
+		return new InMemoryRegisteredClientRepository(registrarClient);
+	}
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
