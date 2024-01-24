@@ -6,16 +6,14 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,7 +34,8 @@ public class SecurityConfig {
             customizer -> customizer.clientRegistrationEndpoint(
                 clientRegistrationEndpoint -> clientRegistrationEndpoint.authenticationProviders(CustomClientMetadataConfig.configureCustomClientMetadataConverters())
             )
-        );
+        )
+        .registeredClientRepository(jdbcRegisteredClientRepository());
 
         httpSecurity.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
@@ -48,23 +47,30 @@ public class SecurityConfig {
     }
 
     @Bean
-	public RegisteredClientRepository registeredClientRepository() {
+    JdbcRegisteredClientRepository jdbcRegisteredClientRepository() {
+        return new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
+    }
+
+    @Bean
+	public RegisteredClient registeredClientRepository() {
 		RegisteredClient registrarClient = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("registrar-client")
 				.clientSecret("{noop}secret")
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)	
 				.scope("client.create")	
-				.scope("client.read")	
+				.scope("client.read")
 				.build();
-
-		return new InMemoryRegisteredClientRepository(registrarClient);
+        
+        jdbcRegisteredClientRepository().save(registrarClient);
+		return registrarClient;
 	}
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        XorCsrfTokenRequestAttributeHandler csrfHandler = new XorCsrfTokenRequestAttributeHandler();
         httpSecurity
-            .csrf(customizer -> customizer.disable())
+            .csrf(customizer -> customizer.csrfTokenRequestHandler(csrfHandler))
             .authorizeHttpRequests(authorize -> 
                 authorize
                     .requestMatchers("/api-docs","/api-docs/*", "/swagger-ui/*").permitAll()
