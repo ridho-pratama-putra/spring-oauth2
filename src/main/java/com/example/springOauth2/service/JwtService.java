@@ -38,18 +38,18 @@ public class JwtService {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     public String extractUsername(String token) {
-        logger.info("extractUsername ::: ");
+        // logger.info("extractUsername ::: ");
         return extractClaim(token, Claims::getSubject);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        logger.info("extractClaim ::: ");
+        // logger.info("extractClaim ::: ");
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-        logger.info("extractAllClaims ::: ");
+        // logger.info("extractAllClaims ::: ");
 
         return Jwts
             .parserBuilder()
@@ -60,7 +60,7 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        logger.info("getSignInKey ::: ");
+        // logger.info("getSignInKey ::: ");
 
         ClassPathResource publicKeyResource = new ClassPathResource(PUBLIC_KEY_PATH);
         File publicKeyFile;
@@ -101,7 +101,7 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        logger.info("isTokenValid ::: " + username);
+        // logger.info("isTokenValid ::: " + username);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -113,7 +113,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public PublicKey readPublicKey(File file) throws Exception {
+    private PublicKey readPublicKey(File file) throws Exception {
         KeyFactory factory = KeyFactory.getInstance("RSA");
 
         try (FileReader keyReader = new FileReader(file);
@@ -126,7 +126,7 @@ public class JwtService {
         }
     }
 
-    public PrivateKey readPrivateKey(File file) throws Exception {
+    private PrivateKey readPrivateKey(File file) throws Exception {
         KeyFactory factory = KeyFactory.getInstance("RSA");
         try (FileReader keyReader = new FileReader(file);
         PemReader pemReader = new PemReader(keyReader)) {
