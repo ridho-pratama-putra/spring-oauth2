@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 import com.example.springOauth2.model.CustomUserDetails;
 import com.example.springOauth2.service.JwtService;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -34,6 +36,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        logger.info("CustomAuthenticationProvider :::: ");
         String principal = authentication.getPrincipal().toString();
         String principalWithLdapUserNameSuffix = authentication.getPrincipal().toString();
         String credential = authentication.getCredentials().toString();
@@ -61,10 +64,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         .build();
 
         Map<String, Object> headers = new HashMap<>();
+        headers.put("alg", SignatureAlgorithm.RS256);
+        headers.put("typ", "JWT");
         Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", jwtService.extractClaim(jwtToken, Claims::getSubject));
+        claims.put("iat", jwtService.extractClaim(jwtToken, Claims::getIssuedAt));
+        claims.put("iss", jwtService.extractClaim(jwtToken, Claims::getIssuer));
 
-        Jwt jwt = new Jwt(jwtToken, Instant.now(), Instant.now(), headers, claims);
-        JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(jwt, customUserDetails.getAuthorities());
+        Jwt jwt = new Jwt(jwtToken, Instant.now(), Instant.now().plusSeconds(1000000000), headers, claims);
+        JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(jwt, user.getAuthorities());
         return jwtAuthenticationToken;
     }
 

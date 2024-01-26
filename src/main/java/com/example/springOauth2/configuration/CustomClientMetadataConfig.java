@@ -53,8 +53,11 @@ public class CustomClientMetadataConfig {
 		public RegisteredClient convert(OidcClientRegistration clientRegistration) {
 			RegisteredClient registeredClient = this.delegate.convert(clientRegistration);
 			ClientSettings.Builder clientSettingsBuilder = ClientSettings.withSettings(
-					registeredClient.getClientSettings().getSettings())
-					.jwkSetUrl(clientRegistration.getJwkSetUrl().toString());
+					registeredClient.getClientSettings()
+						.getSettings()
+						).settings(settings -> settings.put("settings.client.code_challenge_method", "S256"))
+					// .jwkSetUrl(clientRegistration.getJwkSetUrl().toString())
+					;
 			if (!CollectionUtils.isEmpty(this.customClientMetadata)) {
 				clientRegistration.getClaims().forEach((claim, value) -> {
 					if (this.customClientMetadata.contains(claim)) {
