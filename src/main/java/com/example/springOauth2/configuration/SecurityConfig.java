@@ -12,11 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -24,7 +20,6 @@ import org.springframework.security.oauth2.server.authorization.client.JdbcRegis
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
@@ -88,7 +83,7 @@ public class SecurityConfig {
         if (byClientId == null) {
             byClientId = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("registrar-client")
-				.clientSecret("{noop}secret")
+				.clientSecret("$2a$12$6x92sDs3Y7gIK.3gyx.EZeiIeqLS/Mgh1xI5yejK6ZRXbOr3sK4.i")
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)	
 				.scope("client.create")
@@ -117,19 +112,8 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean 
-    UserDetailsService userDetailsService () {
-        UserDetails userDetails = User.withUsername("adnim")
-            .password("adnim")
-            .authorities(new SimpleGrantedAuthority("simple_grant_authority"))
-            .build();
-
-        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager(userDetails);
-        return inMemoryUserDetailsManager;
-    }
-
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
