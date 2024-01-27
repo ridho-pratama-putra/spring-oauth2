@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -53,7 +54,7 @@ public class CustomClientMetadataConfig {
 		}
 
 		@Override
-		public RegisteredClient convert(OidcClientRegistration clientRegistration) {
+		public RegisteredClient convert(@NonNull OidcClientRegistration clientRegistration) {
 			RegisteredClient registeredClient = this.delegate.convert(clientRegistration);
 			ClientSettings.Builder clientSettingsBuilder = ClientSettings.withSettings(
 					registeredClient.getClientSettings()
@@ -91,7 +92,7 @@ public class CustomClientMetadataConfig {
 		}
 
 		@Override
-		public OidcClientRegistration convert(RegisteredClient registeredClient) {
+		public OidcClientRegistration convert(@NonNull RegisteredClient registeredClient) {
 			OidcClientRegistration clientRegistration = this.delegate.convert(registeredClient);
 			Map<String, Object> claims = new HashMap<>(clientRegistration.getClaims());
 			if (!CollectionUtils.isEmpty(this.customClientMetadata)) {
