@@ -6,18 +6,31 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
+
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,21 +40,36 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final DataSource dataSource;
-    private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final KeyManager keyManager;
 
-    @Bean 
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain oauthSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
-        httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(
-            customizer -> customizer.clientRegistrationEndpoint(
-                clientRegistrationEndpoint -> clientRegistrationEndpoint.authenticationProviders(CustomClientMetadataConfig.configureCustomClientMetadataConverters())
+        httpSecurity
+            .getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(
+                // Customizer.withDefaults()
+                customizer -> customizer.clientRegistrationEndpoint(
+                    clientRegistrationEndpoint -> clientRegistrationEndpoint.authenticationProviders(CustomClientMetadataConfig.configureCustomClientMetadataConverters())
+                )
             )
-        )
-        .registeredClientRepository(jdbcRegisteredClientRepository())
+            .registeredClientRepository(jdbcRegisteredClientRepository())
+            // .clientAuthentication(customizer -> customizer
+            //     .authenticationProvider(customOauth2AuthorizationCodeAuthenticationProvider)
+            // )
+            // .authorizationEndpoint(customizer -> customizer.authenticationProvider(customOauth2AuthorizationCodeAuthenticationProvider))
         ;
 
-        httpSecurity.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
+        httpSecurity
+            .formLogin(Customizer.withDefaults())
+            .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
+    }
+
+    @Bean
+    JWKSource<SecurityContext> jwkSource() {
+        JWKSet jwk = new JWKSet(keyManager.rsaKey());
+        return (j, sc) -> j.select(jwk);
     }
 
     @Bean
@@ -77,7 +105,6 @@ public class SecurityConfig {
         XorCsrfTokenRequestAttributeHandler csrfHandler = new XorCsrfTokenRequestAttributeHandler();
         httpSecurity
             .csrf(customizer -> customizer.csrfTokenRequestHandler(csrfHandler))
-            .csrf(customizer -> customizer.disable())
             .authorizeHttpRequests(authorize -> 
                 authorize
                     .requestMatchers("/api-docs","/api-docs/*", "/swagger-ui/*").permitAll()
@@ -85,7 +112,24 @@ public class SecurityConfig {
             )
             .formLogin(customizer -> Customizer.withDefaults())
             .logout(customizer -> Customizer.withDefaults())
+            .exceptionHandling(customizer -> Customizer.withDefaults())
         ;
         return httpSecurity.build();
+    }
+
+    @Bean 
+    UserDetailsService userDetailsService () {
+        UserDetails userDetails = User.withUsername("adnim")
+            .password("adnim")
+            .authorities(new SimpleGrantedAuthority("simple_grant_authority"))
+            .build();
+
+        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager(userDetails);
+        return inMemoryUserDetailsManager;
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
     }
 }

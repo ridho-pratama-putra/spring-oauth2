@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.oidc.OidcClientRegistration;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcClientConfigurationAuthenticationProvider;
@@ -66,7 +69,12 @@ public class CustomClientMetadataConfig {
 				});
 			}
             RegisteredClient result = RegisteredClient.from(registeredClient)
-                .clientSettings(clientSettingsBuilder.build())
+                .clientSettings(clientSettingsBuilder.requireAuthorizationConsent(false).build())
+				.clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // public client
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            	.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+				.scope(OidcScopes.OPENID)
                 .build();
 			return result;
 		}

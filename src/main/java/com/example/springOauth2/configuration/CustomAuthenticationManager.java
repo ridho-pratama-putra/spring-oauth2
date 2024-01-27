@@ -5,8 +5,12 @@
 // import org.springframework.security.authentication.AuthenticationManager;
 // import org.springframework.security.core.Authentication;
 // import org.springframework.security.core.AuthenticationException;
+// import org.springframework.stereotype.Component;
 
-// // @Component
+// import lombok.AllArgsConstructor;
+
+// @Component
+// @AllArgsConstructor
 // public class CustomAuthenticationManager implements AuthenticationManager {
 
 //     /*
@@ -15,11 +19,15 @@
 //      * Throw an AuthenticationException if it believes that the input represents an invalid principal.
 //      * Return null if it cannot decide.
 //      */
+
+//      final CustomAuthenticationProvider customAuthenticationProvider;
+
+
 //     @Override
 //     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 //         Logger logger = LoggerFactory.getLogger(getClass());
 //         logger.info("CustomAuthenticationManager ::::");
-//         return null;
+//         return customAuthenticationProvider.authenticate(authentication);
 //     }
     
 // }
