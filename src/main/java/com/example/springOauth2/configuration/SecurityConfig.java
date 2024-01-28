@@ -1,5 +1,7 @@
 package com.example.springOauth2.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -9,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,6 +41,7 @@ public class SecurityConfig {
 
     private final DataSource dataSource;
     private final KeyManager keyManager;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -108,6 +114,7 @@ public class SecurityConfig {
             .formLogin(customizer -> Customizer.withDefaults())
             .logout(customizer -> Customizer.withDefaults())
             .exceptionHandling(customizer -> Customizer.withDefaults())
+            .authenticationProvider(customAuthenticationProvider)
         ;
         return httpSecurity.build();
     }

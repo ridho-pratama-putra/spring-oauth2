@@ -7,17 +7,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Entity
+// @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +30,19 @@ public class CustomUserDetails implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    private String name;
+    @ManyToOne(cascade = {CascadeType.MERGE})
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    // private AppRole roleId;
+    private String email;
+    private boolean isActive;
+    // @Column(name = "created_at", nullable = false, updatable = false)
+    // @CreatedDate
+    // private Date createdAt;
+    // @Column(name = "updated_at")
+    // @LastModifiedDate
+    // private Date updatedAt;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -35,8 +51,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPassword'");
+        return null;
     }
 
     @Override
@@ -46,7 +61,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -57,13 +71,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        return true;
+        return this.isActive;
     }
 }
