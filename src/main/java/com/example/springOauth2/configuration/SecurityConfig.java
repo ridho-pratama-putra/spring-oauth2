@@ -50,7 +50,6 @@ public class SecurityConfig {
     private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
 	SecurityFilterChain oauthSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
         httpSecurity
