@@ -49,7 +49,7 @@
     <changeSet id="18.1.06" author="rifqi/ridho">
         <createTable tableName="app_permission">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_accessibility"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_permission"/>
             </column>
             <column name="code" type="VARCHAR(255)"/>
             <column name="name" type="VARCHAR(255)"/>
@@ -61,14 +61,14 @@
         </createTable>
     </changeSet>
     <changeSet id="18.1.07" author="rifqi/ridho">
-        <createTable tableName="role_accessibility">
+        <createTable tableName="role_permission">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_roleaccessiblity"/>
             </column>
             <column name="role_id" type="BIGINT"/>
-            <column name="accessibility_id" type="BIGINT"/>
+            <column name="permission_id" type="BIGINT"/>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="accessibility_id" baseTableName="role_accessibility" constraintName="FK_ROLEACCESSIBLITY_ON_ACCESSIBILITY" referencedColumnNames="id" referencedTableName="app_permission"/>
-        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_accessibility" constraintName="FK_ROLEACCESSIBLITY_ON_ROLE" referencedColumnNames="id" referencedTableName="app_role"/>
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="role_permission" constraintName="FK_ROLEACCESSIBLITY_ON_PERMISSION" referencedColumnNames="id" referencedTableName="app_permission"/>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_permission" constraintName="FK_ROLEACCESSIBLITY_ON_ROLE" referencedColumnNames="id" referencedTableName="app_role"/>
     </changeSet>
     </databaseChangeLog>

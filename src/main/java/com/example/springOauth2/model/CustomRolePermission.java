@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomRoleAccessibility {
+public class CustomRolePermission {
 
     @Id
     @Column(name = "id")
@@ -25,5 +25,5 @@ public class CustomRoleAccessibility {
     CustomAppRole role;
 
     @ManyToOne
-    CustomAppAccessibility accessibility;
+    CustomAppPermission permission;
 }

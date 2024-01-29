@@ -48,6 +48,6 @@ public class CustomAppRole {
     private Date updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "role_accessibility", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "accessibility_id"))
-    private Set<CustomAppAccessibility> appAccessibility = new HashSet<>();
+    @JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<CustomAppPermission> appPermission = new HashSet<>();
 }

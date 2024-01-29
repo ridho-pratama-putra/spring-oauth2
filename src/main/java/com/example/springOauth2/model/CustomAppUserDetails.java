@@ -2,7 +2,6 @@ package com.example.springOauth2.model;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,7 @@ public class CustomAppUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<CustomAppPermission> appPermissions = roleId.getAppAccessibility();
+        Set<CustomAppPermission> appPermissions = roleId.getAppPermission();
         return appPermissions.stream().map(appPermission -> new SimpleGrantedAuthority(appPermission.getAuthority())).collect(Collectors.toList());
     }
 
