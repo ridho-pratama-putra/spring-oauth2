@@ -9,5 +9,5 @@
     <include file="schema/user.xml" relativeToChangelogFile="true"/>
     <include file="data/vcs-22-permission-data.xml" relativeToChangelogFile="true"/>
     <include file="data/vcs-22-role-data.xml" relativeToChangelogFile="true"/>
-    <include file="data/vcs-22-access-role-data.sql" relativeToChangelogFile="true"/>
+    <include file="data/vcs-22-permission-role-data.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
