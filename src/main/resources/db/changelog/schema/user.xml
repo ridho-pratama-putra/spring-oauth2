@@ -47,7 +47,7 @@
         </rollback>
     </changeSet>
     <changeSet id="18.1.06" author="rifqi/ridho">
-        <createTable tableName="app_accessibility">
+        <createTable tableName="app_permission">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_accessibility"/>
             </column>
@@ -68,7 +68,7 @@
             <column name="role_id" type="BIGINT"/>
             <column name="accessibility_id" type="BIGINT"/>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="accessibility_id" baseTableName="role_accessibility" constraintName="FK_ROLEACCESSIBLITY_ON_ACCESSIBILITY" referencedColumnNames="id" referencedTableName="app_accessibility"/>
+        <addForeignKeyConstraint baseColumnNames="accessibility_id" baseTableName="role_accessibility" constraintName="FK_ROLEACCESSIBLITY_ON_ACCESSIBILITY" referencedColumnNames="id" referencedTableName="app_permission"/>
         <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_accessibility" constraintName="FK_ROLEACCESSIBLITY_ON_ROLE" referencedColumnNames="id" referencedTableName="app_role"/>
     </changeSet>
     </databaseChangeLog>

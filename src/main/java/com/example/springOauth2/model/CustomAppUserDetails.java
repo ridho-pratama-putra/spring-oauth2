@@ -52,8 +52,8 @@ public class CustomAppUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<CustomAppAccessibility> appAccessibilities = roleId.getAppAccessibility();
-        return appAccessibilities.stream().map(appAccessibility -> new SimpleGrantedAuthority(appAccessibility.getAuthority())).collect(Collectors.toList());
+        Set<CustomAppPermission> appPermissions = roleId.getAppAccessibility();
+        return appPermissions.stream().map(appPermission -> new SimpleGrantedAuthority(appPermission.getAuthority())).collect(Collectors.toList());
     }
 
     @Override
