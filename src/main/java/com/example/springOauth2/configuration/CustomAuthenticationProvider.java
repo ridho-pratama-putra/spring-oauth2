@@ -11,7 +11,6 @@ import javax.naming.directory.InitialDirContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -19,14 +18,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.example.springOauth2.enumeration.LDAPResult;
-import com.example.springOauth2.service.CustomUserDetailService;
-
-import lombok.AllArgsConstructor;
+import com.example.springOauth2.service.CustomAppUserDetailService;
 
 @Component
 public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
     
-    private final CustomUserDetailService customUserDetailService;
+    private final CustomAppUserDetailService customUserDetailService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     // @Value("${login.ldap-port}")
@@ -48,7 +45,7 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         @Value("${ldap.username.suffix}")
         String ldapUserNameSuffix,
         
-        CustomUserDetailService customUserDetailService
+        CustomAppUserDetailService customUserDetailService
     ) {
         this.ldapPort = ldapPort;
         this.ldapHost = ldapHost;

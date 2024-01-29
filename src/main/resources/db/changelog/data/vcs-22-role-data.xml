@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="22.2.02" author="zulvan">
+        <insert tableName="app_role">
+            <column name="code" value="MAXI_ACM"/>
+            <column name="name" value="ACM in MAXI MICRO"/>
+            <column name="is_active" value="1"/>
+            <column name="channel" value="MAXI_MICRO"/>
+            <column name="created_at" value="NOW()"/>
+            <column name="updated_at" value="NOW()"/>
+        </insert>
+        <insert tableName="app_role">
+            <column name="code" value="MAXI_SPV"/>
+            <column name="name" value="Supervisor in MAXI MICRO"/>
+            <column name="is_active" value="1"/>
+            <column name="channel" value="MAXI_MICRO"/>
+            <column name="created_at" value="NOW()"/>
+            <column name="updated_at" value="NOW()"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
