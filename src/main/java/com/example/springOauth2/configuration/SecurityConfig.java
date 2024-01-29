@@ -1,6 +1,7 @@
 package com.example.springOauth2.configuration;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,6 +31,9 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
+import com.nimbusds.jose.KeySourceException;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSelector;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -41,8 +45,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final DataSource dataSource;
     private final KeyManager keyManager;
+    private final DataSource dataSource;
     private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
@@ -73,7 +77,12 @@ public class SecurityConfig {
     @Bean
     JWKSource<SecurityContext> jwkSource() {
         JWKSet jwk = new JWKSet(keyManager.rsaKey());
-        return (j, sc) -> j.select(jwk);
+        return new JWKSource<SecurityContext>() {
+            @Override
+            public List<JWK> get(JWKSelector arg0, SecurityContext arg1) throws KeySourceException {
+                return arg0.select(jwk);
+            }
+        };
     }
 
     @Bean
