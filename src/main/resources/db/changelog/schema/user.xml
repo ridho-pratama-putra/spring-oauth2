@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="18.1.04" author="rifqi/ridho">
+        <createTable tableName="app_role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role"/>
+            </column>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="is_active" type="TINYINT(1)"/>
+            <column name="channel" type="VARCHAR(255)"/>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="app_role"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="18.1.05" author="rifqi/ridho">
+        <createTable tableName="app_user">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="is_active" type="TINYINT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="app_user" constraintName="FK_USER_ON_ROLE_CODE"
+                                 onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="app_role"/>
+        <rollback>
+            <dropTable tableName="app_user"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="18.1.06" author="rifqi/ridho">
+        <createTable tableName="app_permission">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_permission"/>
+            </column>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="is_active" type="TINYINT(1)"/>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="18.1.07" author="rifqi/ridho">
+        <createTable tableName="role_permission">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_roleaccessiblity"/>
+            </column>
+            <column name="role_id" type="BIGINT"/>
+            <column name="permission_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="role_permission" constraintName="FK_ROLEACCESSIBLITY_ON_PERMISSION" referencedColumnNames="id" referencedTableName="app_permission"/>
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_permission" constraintName="FK_ROLEACCESSIBLITY_ON_ROLE" referencedColumnNames="id" referencedTableName="app_role"/>
+    </changeSet>
+    </databaseChangeLog>
