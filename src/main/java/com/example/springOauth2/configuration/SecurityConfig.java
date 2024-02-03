@@ -93,7 +93,7 @@ public class SecurityConfig {
     }
 
     @Bean
-	public RegisteredClient registeredClientRepository() {
+	RegisteredClient registeredClientRepository() {
 		RegisteredClient byClientId = jdbcRegisteredClientRepository().findByClientId("registrar-client");
         if (byClientId == null) {
             byClientId = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -129,12 +129,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-	public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() { 
+	OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() { 
 		return (context) -> {
 			if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) { 
 				context.getClaims().claims((claims) -> {
