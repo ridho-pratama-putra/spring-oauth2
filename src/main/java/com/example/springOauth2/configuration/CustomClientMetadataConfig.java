@@ -1,5 +1,6 @@
 package com.example.springOauth2.configuration;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.server.authorization.oidc.authenticat
 import org.springframework.security.oauth2.server.authorization.oidc.converter.OidcClientRegistrationRegisteredClientConverter;
 import org.springframework.security.oauth2.server.authorization.oidc.converter.RegisteredClientOidcClientRegistrationConverter;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.util.CollectionUtils;
 
 public class CustomClientMetadataConfig {
@@ -76,6 +78,10 @@ public class CustomClientMetadataConfig {
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             	.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.scope(OidcScopes.OPENID)
+				.tokenSettings(TokenSettings.builder()
+					.accessTokenTimeToLive(Duration.ofMinutes(60L))
+					.refreshTokenTimeToLive(Duration.ofDays(1))
+					.build())
                 .build();
 			return result;
 		}
