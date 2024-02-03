@@ -27,7 +27,6 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.XorCsrfTokenRequestAttributeHandler;
 
 import com.nimbusds.jose.KeySourceException;
 import com.nimbusds.jose.jwk.JWK;
@@ -37,7 +36,6 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -112,19 +110,21 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        XorCsrfTokenRequestAttributeHandler csrfHandler = new XorCsrfTokenRequestAttributeHandler();
+        // XorCsrfTokenRequestAttributeHandler csrfHandler = new XorCsrfTokenRequestAttributeHandler();
         httpSecurity
-            .csrf(customizer -> customizer.csrfTokenRequestHandler(csrfHandler))
+            // .csrf(customizer -> customizer.csrfTokenRequestHandler(csrfHandler))
+            .csrf(customizer -> customizer.disable())
             .authorizeHttpRequests(authorize -> 
                 authorize
                     .requestMatchers("/api-docs","/api-docs/*", "/swagger-ui/*").permitAll()
                     .anyRequest().authenticated()
             )
             .formLogin(customizer -> Customizer.withDefaults())
-            .logout(customizer -> Customizer.withDefaults())
+            .logout(customizer -> customizer.clearAuthentication(true).invalidateHttpSession(true))
             .exceptionHandling(customizer -> Customizer.withDefaults())
             .authenticationProvider(customAuthenticationProvider)
         ;
+
         return httpSecurity.build();
     }
 
