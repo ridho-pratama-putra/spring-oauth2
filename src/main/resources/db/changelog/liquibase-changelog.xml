@@ -6,8 +6,5 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <include file="classpath:org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql" relativeToChangelogFile="false" />
-    <include file="schema/user.xml" relativeToChangelogFile="true"/>
-    <include file="data/vcs-22-permission-data.xml" relativeToChangelogFile="true"/>
-    <include file="data/vcs-22-role-data.xml" relativeToChangelogFile="true"/>
-    <include file="data/vcs-22-permission-role-data.sql" relativeToChangelogFile="true"/>
+    <include file="classpath:org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql" relativeToChangelogFile="false" />
 </databaseChangeLog>
