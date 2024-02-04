@@ -60,6 +60,7 @@ public class SecurityConfig {
             //     .authenticationProvider(customOauth2AuthorizationCodeAuthenticationProvider)
             // )
             // .authorizationEndpoint(customizer -> customizer.authenticationProvider(customOauth2AuthorizationCodeAuthenticationProvider))
+            .authorizationService(new CustomOauth2AuthorizationService(jdbcTemplate(), jdbcRegisteredClientRepository()))
         ;
 
         httpSecurity

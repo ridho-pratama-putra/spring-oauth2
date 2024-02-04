@@ -7,22 +7,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.springOauth2.repository.CustomAppUserRepository;
-
-import lombok.AllArgsConstructor;
+import com.example.springOauth2.model.CustomUserDetail;
 
 @Service
-@AllArgsConstructor
 public class CustomAppUserDetailService implements UserDetailsService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final CustomAppUserRepository customUserRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // AbstractUserDetailsAuthenticationProvider
-        logger.info("CustomAppUserDetailService.loadUserByUsername :::: ");
-        UserDetails result = customUserRepository.findByUsername(username).orElse(null);
-        return result;
+        logger.info("CustomAppUserDetailService.loadUserByUsername ::: ");
+        UserDetails userDetails = CustomUserDetail.builder()
+            .username(username)
+            .build();
+        return userDetails;
     }
+
 }

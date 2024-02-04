@@ -59,7 +59,7 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
         // super.additionalAuthenticationChecks(userDetails, authentication);
         logger.info("CustomAuthenticationProvider.additionalAuthenticationChecks :::: ");
         String principalWithLdapUserNameSuffix = userDetails.getUsername().toString().concat(ldapUserNameSuffix);
-        String credential = authentication.getCredentials().toString();
+        // String credential = authentication.getCredentials().toString();
         // LDAPResult loginResult = login(principalWithLdapUserNameSuffix, credential);
         // if(!LDAPResult.SUCCESS.equals(loginResult)) {
         //     throw new BadCredentialsException(userDetails.getUsername().toString());
