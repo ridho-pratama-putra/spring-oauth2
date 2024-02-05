@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -45,6 +46,11 @@ public class SecurityConfig {
     private final DataSource dataSource;
     private final CustomAuthenticationProvider customAuthenticationProvider;
 
+    JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService() {
+        CustomOauth2AuthorizationService result = new CustomOauth2AuthorizationService(jdbcTemplate(), jdbcRegisteredClientRepository());
+        return result;
+    }
+
     @Bean
 	SecurityFilterChain oauthSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
@@ -60,7 +66,7 @@ public class SecurityConfig {
             //     .authenticationProvider(customOauth2AuthorizationCodeAuthenticationProvider)
             // )
             // .authorizationEndpoint(customizer -> customizer.authenticationProvider(customOauth2AuthorizationCodeAuthenticationProvider))
-            .authorizationService(new CustomOauth2AuthorizationService(jdbcTemplate(), jdbcRegisteredClientRepository()))
+            .authorizationService(jdbcOAuth2AuthorizationService())
         ;
 
         httpSecurity
@@ -121,8 +127,7 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .formLogin(customizer -> Customizer.withDefaults())
-            .logout(customizer -> customizer.clearAuthentication(true).invalidateHttpSession(true))
-            .exceptionHandling(customizer -> Customizer.withDefaults())
+            // .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(customAuthenticationProvider)
         ;
 

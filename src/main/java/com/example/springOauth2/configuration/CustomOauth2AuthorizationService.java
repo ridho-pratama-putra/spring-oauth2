@@ -27,7 +27,6 @@ public class CustomOauth2AuthorizationService extends JdbcOAuth2AuthorizationSer
     @Override
     @Nullable
     public OAuth2Authorization findByToken(String token, @Nullable OAuth2TokenType tokenType) {
-        logger.info("CustomOauth2AuthorizationService.findByToken ::: ");
         return super.findByToken(token, tokenType);
     }
 
