@@ -32,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### CERT
+/src/main/resources/keys/*

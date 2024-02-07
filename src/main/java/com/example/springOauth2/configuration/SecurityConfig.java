@@ -66,7 +66,6 @@ public class SecurityConfig {
 
         httpSecurity
             .formLogin(Customizer.withDefaults())
-            .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()))
             ;
         return httpSecurity.build();
     }
@@ -121,8 +120,6 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .formLogin(customizer -> Customizer.withDefaults())
-            .logout(customizer -> Customizer.withDefaults())
-            .exceptionHandling(customizer -> Customizer.withDefaults())
             .authenticationProvider(customAuthenticationProvider)
         ;
         return httpSecurity.build();
